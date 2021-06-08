@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter&display=swap"
+      rel="stylesheet"
+    />
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        font-family: "Inter", sans-serif;
+      }
+      html,
+      body,
+      #wrapper {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+      }
+      #wrapper {
+        display: flex;
+      }
+      #controls {
+        box-sizing: border-box;
+        width: 80px;
+        height: 100%;
+        padding: 6px 0;
+        display: flex;
+        flex-direction: column;
+        background-color: #1f2225;
+      }
+      #canvas {
+        width: calc(100vw - 80px);
+        height: 100%;
+        display: block;
+      }
+
+      .btn-separator {
+        margin: 12px 20px;
+        width: 40px;
+        height: 1px;
+        background-color: #75757e;
+      }
+
+      .btn {
+        margin: 6px 12px;
+        width: 56px;
+        height: 56px;
+        outline: none;
+        border: 0;
+        box-shadow: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 0.92rem;
+        transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: #35393f;
+      }
+
+      .btn.selected,
+      .btn:hover {
+        background-color: #75757e;
+      }
+
+      .btn.disabled {
+        background-color: #1f2225;
+        text-decoration: line-through;
+      }
+
+      .btn:hover:not(.selected):not(.disabled) {
+        cursor: pointer;
+      }
+
+      .btn-gencor {
+        font-size: 0.6em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <div id="controls">
+        <button class="btn btn-pause">Pause</button>
+        <button class="btn btn-gencor">Generate Optimized CoR Data</button>
+        <div class="btn-separator"></div>
+        <button class="btn btn-skinning-method selected">LBS</button>
+        <button class="btn btn-skinning-method">DQS</button>
+        <button class="btn btn-skinning-method">SBS</button>
+        <button class="btn btn-skinning-method disabled">COR</button>
+      </div>
+      <div><canvas id="canvas"></canvas></div>
+    </div>
+    <script type="module" src="./bundle.js"></script>
+  </body>
+</html>
