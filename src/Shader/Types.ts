@@ -1,0 +1,6 @@
+export enum SkinningType {
+  LINEAR_BLEND,
+  SPHERICAL_BLEND,
+  DUAL_QUATERNION,
+  OPTIMIZED_COR,
+}
