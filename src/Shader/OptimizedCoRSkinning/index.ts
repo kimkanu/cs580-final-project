@@ -1,9 +1,9 @@
 import quaternionShaderChunk from "../Chunk/quaternion.chunk.vert";
-import optimizedCoRSkinningShaderTemplate from "./src/optimized_cor_skinning.vert";
-import optimizedCoRParsShaderChunk from "./src/optimized_cor_pars.chunk.vert";
-import optimizedCoRSkinbaseShaderChunk from "./src/optimized_cor_skinbase.chunk.vert";
-import optimizedCoRSkinnormalShaderChunk from "./src/optimized_cor_skinnormal.chunk.vert";
-import optimizedCoRSkinningShaderChunk from "./src/optimized_cor_skinning.chunk.vert";
+import optimizedCoRSkinningShaderTemplate from "./Chunk/optimized_cor_skinning.vert";
+import optimizedCoRParsShaderChunk from "./Chunk/optimized_cor_pars.chunk.vert";
+import optimizedCoRSkinbaseShaderChunk from "./Chunk/optimized_cor_skinbase.chunk.vert";
+import optimizedCoRSkinnormalShaderChunk from "./Chunk/optimized_cor_skinnormal.chunk.vert";
+import optimizedCoRSkinningShaderChunk from "./Chunk/optimized_cor_skinning.chunk.vert";
 import { substituteShader } from "..";
 
 const substitutions = {

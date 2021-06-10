@@ -1,10 +1,10 @@
 import quaternionShaderChunk from "../Chunk/quaternion.chunk.vert";
 import dualQuaternionShaderChunk from "../Chunk/dual_quaternion.chunk.vert";
-import dualQuaternionSkinningShaderTemplate from "./src/dual_quaternion_skinning.vert";
-import dualQuaternionParsShaderChunk from "./src/dual_quaternion_pars.chunk.vert";
-import dualQuaternionSkinbaseShaderChunk from "./src/dual_quaternion_skinbase.chunk.vert";
-import dualQuaternionSkinnormalShaderChunk from "./src/dual_quaternion_skinnormal.chunk.vert";
-import dualQuaternionSkinningShaderChunk from "./src/dual_quaternion_skinning.chunk.vert";
+import dualQuaternionSkinningShaderTemplate from "./Chunk/dual_quaternion_skinning.vert";
+import dualQuaternionParsShaderChunk from "./Chunk/dual_quaternion_pars.chunk.vert";
+import dualQuaternionSkinbaseShaderChunk from "./Chunk/dual_quaternion_skinbase.chunk.vert";
+import dualQuaternionSkinnormalShaderChunk from "./Chunk/dual_quaternion_skinnormal.chunk.vert";
+import dualQuaternionSkinningShaderChunk from "./Chunk/dual_quaternion_skinning.chunk.vert";
 import { substituteShader } from "..";
 
 const substitutions = {
