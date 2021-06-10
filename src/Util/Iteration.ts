@@ -16,7 +16,7 @@ export function combinations<T extends number | string>(
     return [];
   }
 
-  const result = [];
+  const result: T[][] = [];
 
   for (let i = 0; i <= array.length - n; i++) {
     for (const combination of combinations(array.slice(i + 1), n - 1)) {

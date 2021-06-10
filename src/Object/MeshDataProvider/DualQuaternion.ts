@@ -1,6 +1,6 @@
 import { DataTexture } from "three";
-import dualQuaternionSkinningShader from "~/src/Shader/DualQuaternionSkinning";
-import { isShaderMaterial } from "~/src/Util/Three";
+import dualQuaternionSkinningShader from "~/Shader/DualQuaternionSkinning";
+import { isShaderMaterial } from "~/Util/Three";
 import { MeshDataProvider } from "./Types";
 
 export class DualQuaternion implements MeshDataProvider {

@@ -1,7 +1,7 @@
 import { DataTexture } from "three";
 
-import sphericalBlendSkinningShader from "~/src/Shader/SphericalBlendSkinning";
-import { isShaderMaterial } from "~/src/Util/Three";
+import sphericalBlendSkinningShader from "~/Shader/SphericalBlendSkinning";
+import { isShaderMaterial } from "~/Util/Three";
 import { MeshDataProvider } from "./Types";
 
 export class SphericalBlend implements MeshDataProvider {
@@ -33,9 +33,11 @@ export class SphericalBlend implements MeshDataProvider {
   }
 
   setAttributes(skinnedMesh: THREE.SkinnedMesh) {
-    skinnedMesh.geometry.setAttribute(
-      "centerOfRotation",
-      this.centerOfRotation
-    );
+    if (this.centerOfRotation) {
+      skinnedMesh.geometry.setAttribute(
+        "centerOfRotation",
+        this.centerOfRotation
+      );
+    }
   }
 }

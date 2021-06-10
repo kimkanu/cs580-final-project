@@ -1,6 +1,6 @@
 import { DataTexture } from "three";
-import optimizedCoRSkinningShader from "~/src/Shader/OptimizedCoRSkinning";
-import { isShaderMaterial } from "~/src/Util/Three";
+import optimizedCoRSkinningShader from "~/Shader/OptimizedCoRSkinning";
+import { isShaderMaterial } from "~/Util/Three";
 import { MeshDataProvider } from "./Types";
 
 export class OptimizedCoR implements MeshDataProvider {
@@ -32,9 +32,11 @@ export class OptimizedCoR implements MeshDataProvider {
   }
 
   setAttributes(skinnedMesh: THREE.SkinnedMesh) {
-    skinnedMesh.geometry.setAttribute(
-      "centerOfRotation",
-      this.centerOfRotation
-    );
+    if (this.centerOfRotation) {
+      skinnedMesh.geometry.setAttribute(
+        "centerOfRotation",
+        this.centerOfRotation
+      );
+    }
   }
 }

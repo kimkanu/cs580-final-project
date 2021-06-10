@@ -1,5 +1,5 @@
-import linearBlendSkinningShader from "~/src/Shader/LinearBlendSkinning";
-import { isShaderMaterial } from "~/src/Util/Three";
+import linearBlendSkinningShader from "~/Shader/LinearBlendSkinning";
+import { isShaderMaterial } from "~/Util/Three";
 import { MeshDataProvider } from "./Types";
 
 export class LinearBlend implements MeshDataProvider {

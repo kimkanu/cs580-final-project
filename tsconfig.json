@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "~*": ["../*"]
+      "~*": ["../src/*"]
     },
     "lib": [
       "es6",
@@ -11,17 +11,15 @@
       "es2019",
       "es2020",
       "esnext",
-      "dom",
-      "webworker"
+      "dom"
     ],
     "baseUrl": "./src",
-    "outDir": "./dist/",
+    "outDir": "./dist",
     "sourceMap": true,
-    "noImplicitAny": true,
+    "strict": true,
     "module": "es6",
-    "target": "es5",
-    "jsx": "react",
-    "allowJs": true,
+    "target": "es6",
     "moduleResolution": "node"
-  }
+  },
+  "exclude": ["cor"]
 }

@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import Stats from "three/examples/jsm/libs/stats.module";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import {
@@ -15,12 +14,12 @@ import * as _ from "lodash";
 import { SVD } from "svd-js";
 
 import * as A from "./Types";
-import { delay } from "~/src/Util/Delay";
-import { DualQuaternion } from "~/src/Util/DualQuaternion";
-import { isSkinnedMesh } from "~/src/Util/Three";
-import { combinations } from "~/src/Util/Iteration";
-import { SkinningType } from "~/src/Shader/Types";
-import * as MDP from "~/src/Object/MeshDataProvider";
+import { delay } from "~/Util/Delay";
+import { DualQuaternion } from "~/Util/DualQuaternion";
+import { isSkinnedMesh } from "~/Util/Three";
+import { combinations } from "~/Util/Iteration";
+import { SkinningType } from "~/Shader/Types";
+import * as MDP from "~/Object/MeshDataProvider";
 
 const animation1 = (elapsed: number): VRMPose => ({
   [VRMSchema.HumanoidBoneName.LeftUpperLeg]: {
@@ -63,7 +62,14 @@ const animation1 = (elapsed: number): VRMPose => ({
   },
   [VRMSchema.HumanoidBoneName.LeftHand]: {
     rotation: new THREE.Quaternion()
-      .setFromEuler(new THREE.Euler(((-Math.cos(elapsed) + 1) / 2) * (-Math.PI / 6), 0.02, 0.02, "XYZ"))
+      .setFromEuler(
+        new THREE.Euler(
+          ((-Math.cos(elapsed) + 1) / 2) * (-Math.PI / 6),
+          0.02,
+          0.02,
+          "XYZ"
+        )
+      )
       .toArray() as RawVector4,
   },
   [VRMSchema.HumanoidBoneName.LeftShoulder]: {
@@ -88,8 +94,6 @@ const animation1 = (elapsed: number): VRMPose => ({
   },
 });
 
-
-
 const animation2 = (elapsed: number): VRMPose => ({
   [VRMSchema.HumanoidBoneName.LeftUpperLeg]: {
     rotation: [0.0, 0.0, -0.1, 1],
@@ -101,8 +105,7 @@ const animation2 = (elapsed: number): VRMPose => ({
         new THREE.Euler(
           0,
           0,
-          ((Math.cos(elapsed) + 1) / 2) * (Math.PI / 1.4) -
-            Math.PI / 2.5,
+          ((Math.cos(elapsed) + 1) / 2) * (Math.PI / 1.4) - Math.PI / 2.5,
           "XYZ"
         )
       )
@@ -114,8 +117,7 @@ const animation2 = (elapsed: number): VRMPose => ({
         new THREE.Euler(
           0,
           0,
-          ((Math.cos(elapsed) + 1) / 2) * (Math.PI / 1.4) -
-            Math.PI / 2.5,
+          ((Math.cos(elapsed) + 1) / 2) * (Math.PI / 1.4) - Math.PI / 2.5,
           "XYZ"
         )
       )
@@ -209,10 +211,9 @@ export class MainApp extends A.App {
   // basic things
   canvas: HTMLCanvasElement;
   renderer: THREE.WebGLRenderer;
-  camera: THREE.PerspectiveCamera;
-  controls: OrbitControls;
+  camera!: THREE.PerspectiveCamera;
+  controls!: OrbitControls;
   scene: THREE.Scene;
-  stats: Stats;
 
   skinningType: SkinningType = SkinningType.LINEAR_BLEND;
   meshDataProviders: {
@@ -236,9 +237,7 @@ export class MainApp extends A.App {
   constructor() {
     super();
 
-    this.canvas = document.getElementById(
-      "canvas"
-    ) as HTMLCanvasElement;
+    this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
     const renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
@@ -268,11 +267,7 @@ export class MainApp extends A.App {
       const skyColor = 0xb1e1ff; // light blue
       const groundColor = 0xb97a20; // brownish orange
       const intensity = 1;
-      const light = new THREE.HemisphereLight(
-        skyColor,
-        groundColor,
-        intensity
-      );
+      const light = new THREE.HemisphereLight(skyColor, groundColor, intensity);
       scene.add(light);
     }
 
@@ -320,9 +315,7 @@ export class MainApp extends A.App {
       }
     });
 
-    this.vrms.kazuki?.scene.traverse(
-      this.sendOptimizedCoRDataRequests(true)
-    );
+    this.vrms.kazuki?.scene.traverse(this.sendOptimizedCoRDataRequests(true));
     this.vrms.kazuki?.scene.traverse(this.traverseCallback);
 
     await delay(500);
@@ -345,19 +338,17 @@ export class MainApp extends A.App {
           checkOnly,
           modelName: "kazuki",
           meshName: mesh.name,
-          vertices: Array.from(
-            mesh.geometry.getAttribute("position").array
-          ),
-          triangleIndices: Array.from(mesh.geometry.index.array),
+          vertices: Array.from(mesh.geometry.getAttribute("position").array),
+          triangleIndices: Array.from(mesh.geometry.index?.array ?? []),
           skinWeights: _.chunk(skinWeight, 4).map(
             (singleVertexSkinWeight, vertexCount) =>
               singleVertexSkinWeight
                 .map(
                   (weight, weightCount) =>
-                    [
-                      skinIndex[4 * vertexCount + weightCount],
-                      weight,
-                    ] as [number, number]
+                    [skinIndex[4 * vertexCount + weightCount], weight] as [
+                      number,
+                      number
+                    ]
                 )
                 .filter(([index, weight]) => weight !== 0)
           ),
@@ -398,7 +389,7 @@ export class MainApp extends A.App {
           // Enable COR button
           document
             .querySelector(".btn-skinning-method.disabled")
-            .classList.remove("disabled");
+            ?.classList.remove("disabled");
         }
       });
   };
@@ -411,24 +402,21 @@ export class MainApp extends A.App {
     this.optimizedCoRBuffers[modelName] = {};
     console.log("Generating...");
 
-    this.vrms[modelName].scene.traverse(
-      async (mesh: THREE.Object3D) => {
-        if (isSkinnedMesh(mesh)) {
-          const buffer = await (
-            await fetch(
-              `http://localhost:9001/${modelName}/${mesh.name}.corbin`
-            )
-          ).arrayBuffer();
+    this.vrms[modelName].scene.traverse(async (mesh: THREE.Object3D) => {
+      if (isSkinnedMesh(mesh)) {
+        const buffer = await (
+          await fetch(`http://localhost:9001/${modelName}/${mesh.name}.corbin`)
+        ).arrayBuffer();
 
-          this.optimizedCoRBuffers[modelName][mesh.name] =
-            new Float32Array(buffer);
+        this.optimizedCoRBuffers[modelName][mesh.name] = new Float32Array(
+          buffer
+        );
 
-          console.log(
-            `Optimized CoR buffer for the mesh ${mesh.name} was fetched.`
-          );
-        }
+        console.log(
+          `Optimized CoR buffer for the mesh ${mesh.name} was fetched.`
+        );
       }
-    );
+    });
   };
 
   traverseCallback = (mesh: THREE.Object3D) => {
@@ -514,11 +502,8 @@ export class MainApp extends A.App {
 
           const centerOfRotationTable = new Map<number, RawVector3>();
           const skinIndexAttr = mesh.geometry.getAttribute("skinIndex");
-          const skinIndexArray = Array.from(
-            skinIndexAttr.array as Uint16Array
-          );
-          const skinWeightAttr =
-            mesh.geometry.getAttribute("skinWeight");
+          const skinIndexArray = Array.from(skinIndexAttr.array as Uint16Array);
+          const skinWeightAttr = mesh.geometry.getAttribute("skinWeight");
 
           // Encode a skin index into a single integer.
           // XXX: the number of total bones (for each SkinnedMesh)
@@ -533,14 +518,10 @@ export class MainApp extends A.App {
 
           _.range(skinIndexAttr.count).forEach((vertexIndex) => {
             const skinIndex = pipe(
-              skinIndexArray.slice(
-                4 * vertexIndex,
-                4 * (vertexIndex + 1)
-              ),
+              skinIndexArray.slice(4 * vertexIndex, 4 * (vertexIndex + 1)),
               (l) =>
                 l.filter(
-                  (s, i) =>
-                    skinWeightAttr.array[4 * vertexIndex + i] !== 0
+                  (s, i) => skinWeightAttr.array[4 * vertexIndex + i] !== 0
                 ),
               (l) => _.sortBy(l),
               (l) => _.sortedUniq(l)
@@ -551,9 +532,7 @@ export class MainApp extends A.App {
             // just seek the entry in the table
             if (centerOfRotationTable.has(skinIndexKey)) {
               // append
-              centerOfRotation.push(
-                centerOfRotationTable.get(skinIndexKey)
-              );
+              centerOfRotation.push(centerOfRotationTable.get(skinIndexKey)!);
               return;
             }
 
@@ -735,11 +714,7 @@ export class MainApp extends A.App {
     document.addEventListener("keyup", this.keyupHandler);
   }
 
-  setCameraFitToFrame(
-    sizeToFitOnScreen: any,
-    boxSize: any,
-    boxCenter: any
-  ) {
+  setCameraFitToFrame(sizeToFitOnScreen: any, boxSize: any, boxCenter: any) {
     const halfSizeToFitOnScreen = sizeToFitOnScreen * 0.5;
     const halfFovY = THREE.MathUtils.degToRad(this.camera.fov * 0.5);
     const distance = halfSizeToFitOnScreen / Math.tan(halfFovY);
@@ -768,63 +743,56 @@ export class MainApp extends A.App {
   }
 
   attachButtonClickHandlers() {
-    document
-      .querySelector(".btn-pause")
-      .addEventListener("click", (e) => {
-        if (
-          document.querySelector(".btn-pause").textContent === "Pause"
-        ) {
+    const btnPause = document.querySelector(".btn-pause");
+    if (btnPause) {
+      btnPause.addEventListener("click", () => {
+        if (btnPause.textContent === "Pause") {
           this.isPaused = true;
-          document.querySelector(".btn-pause").textContent = "Play";
+          btnPause.textContent = "Play";
         } else {
           this.isPaused = false;
-          document.querySelector(".btn-pause").textContent = "Pause";
+          btnPause.textContent = "Pause";
         }
       });
+    }
 
-    document
-      .querySelector(".btn-gencor")
-      .addEventListener("click", (e) => {
-        this.vrms.kazuki?.scene.traverse(
-          this.sendOptimizedCoRDataRequests(true)
-        );
-      });
+    document.querySelector(".btn-gencor")?.addEventListener("click", () => {
+      this.vrms.kazuki?.scene.traverse(this.sendOptimizedCoRDataRequests(true));
+    });
 
-    document
-      .querySelectorAll(".btn-skinning-method")
-      .forEach((el: HTMLButtonElement) => {
-        el.addEventListener("click", (e) => {
-          if (
-            el.classList.contains("selected") ||
-            el.classList.contains("disabled")
-          )
-            return;
+    document.querySelectorAll(".btn-skinning-method").forEach((el: Element) => {
+      el.addEventListener("click", () => {
+        if (
+          el.classList.contains("selected") ||
+          el.classList.contains("disabled")
+        )
+          return;
 
-          switch (el.textContent) {
-            case "LBS": {
-              this.skinningType = SkinningType.LINEAR_BLEND;
-              break;
-            }
-            case "DQS": {
-              this.skinningType = SkinningType.DUAL_QUATERNION;
-              break;
-            }
-            case "SBS": {
-              this.skinningType = SkinningType.SPHERICAL_BLEND;
-              break;
-            }
-            case "COR": {
-              this.skinningType = SkinningType.OPTIMIZED_COR;
-              break;
-            }
+        switch (el.textContent) {
+          case "LBS": {
+            this.skinningType = SkinningType.LINEAR_BLEND;
+            break;
           }
+          case "DQS": {
+            this.skinningType = SkinningType.DUAL_QUATERNION;
+            break;
+          }
+          case "SBS": {
+            this.skinningType = SkinningType.SPHERICAL_BLEND;
+            break;
+          }
+          case "COR": {
+            this.skinningType = SkinningType.OPTIMIZED_COR;
+            break;
+          }
+        }
 
-          document
-            .querySelector(".btn-skinning-method.selected")
-            ?.classList.remove("selected");
-          el.classList.add("selected");
-        });
+        document
+          .querySelector(".btn-skinning-method.selected")
+          ?.classList.remove("selected");
+        el.classList.add("selected");
       });
+    });
   }
 
   update(elapsed: number, dt: number) {
@@ -857,7 +825,7 @@ export class MainApp extends A.App {
       camera.updateProjectionMatrix();
     }
 
-    this.vrms.kazuki?.humanoid.setPose(this.animation(elapsed));
+    this.vrms.kazuki?.humanoid?.setPose(this.animation(elapsed));
     this.vrms.kazuki?.scene.traverse(this.traverseCallback);
 
     renderer.render(this.scene, camera);

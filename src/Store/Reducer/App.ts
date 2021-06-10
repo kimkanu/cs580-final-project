@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as O from "fp-ts/Option";
 
-import { State } from "~/src/Store";
-import * as A from "~/src/App/Types";
-import { MainApp } from "~/src/App/MainVRM";
+import { State } from "~/Store";
+import * as A from "~/App/Types";
+import { MainApp } from "~/App/MainVRM";
 
 interface AppState {
   app: O.Option<A.App>;
