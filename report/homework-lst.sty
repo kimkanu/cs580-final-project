@@ -1,0 +1,176 @@
+
+% listings
+\RequirePackage{realboxes}
+\RequirePackage{listings}
+\RequirePackage{ifthen}
+\RequirePackage{xparse}
+\RequirePackage{xcolor}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{fontspec}
+\RequirePackage{etoolbox}
+\setmonofont[BoldFont={Inconsolata-Bold.ttf}]{Inconsolata-Regular.ttf}
+
+\definecolor{textcolor}{HTML}{010101}
+\definecolor{stringcolor}{HTML}{039c43}
+\definecolor{commentcolor}{HTML}{999999}
+\definecolor{numbercolor}{HTML}{308ce5}
+\definecolor{keywordcolor}{HTML}{ff3399}
+\definecolor{variablecolor}{HTML}{0086b3}
+\definecolor{bgcolor}{HTML}{f7f7f7}
+
+\makeatletter
+
+%%% Copied from https://tex.stackexchange.com/a/500690/23765
+% Some conditional tests
+\def\@genericif#1{#1\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+\def\@ifdigit#1{\ifnum1<1\noexpand#1\relax\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+\def\@ifempty#1{\@genericif{\if\relax\detokenize{#1}\relax}}
+
+% The main parsing macros
+\def\parse@num#1{%
+    \@ifempty{#1}%
+        {\parse@num@false}%
+        {\parse@num@sign#1{}\@end{}}%
+}
+% Parse sign
+\def\parse@num@sign#1#2\@end{%
+    \@genericif{\ifx\parse@num@minus#1}%
+        {\@ifempty{#2}{\parse@num@false}{\parse@num@dig#2\@end}}%
+        {\@genericif{\ifx\parse@num@plus#1}%
+            {\@ifempty{#2}{\parse@num@false}{\parse@num@dig#2\@end}}%
+            {\parse@num@dig#1#2\@end}%
+        }%
+}
+% Parse first digit
+\def\parse@num@dig#1#2\@end{%
+    \@ifdigit{#1}%
+        {\@ifempty{#2}%
+            {\parse@num@true}%
+            {\parse@num@digs#2\@end}}%
+        {\parse@num@false}%
+}
+% Parse optional following digits
+\def\parse@num@digs#1#2\@end{%
+    \@ifdigit{#1}{%
+        \@ifempty{#2}%
+            {\parse@num@true}%
+            {\parse@num@digs#2\@end}%
+    }{%
+        \@genericif{\parsefloat}{%
+            \@genericif{\ifx\parse@num@point#1}%
+                {\@ifempty{#2}{\parse@num@false}{\parse@num@decs#2\@end}}%
+                {\parse@num@false}%
+        }{\parse@num@false}%
+    }%
+}
+% Parse decimal places
+\def\parse@num@decs#1#2\@end{%
+    \@ifdigit{#1}{%
+        \@ifempty{#2}%
+            {\parse@num@true}%
+            {\parse@num@decs#2\@end}%
+    }{\parse@num@false}%
+}
+
+% User interface
+\newcommand\ifnumber[4][]{%
+    \begingroup
+    \let\parsesign=\iftrue
+    \let\parsefloat=\iftrue
+    \let\parse@num@minus=-%
+    \let\parse@num@plus=+%
+    \let\parse@num@point=.%
+    #1%
+    \def\parse@num@true{\endgroup#3}%
+    \def\parse@num@false{\endgroup#4}%
+    \parse@num{#2}%
+}
+
+
+%%% Additions to the listings package
+\lst@Key{numbersstyle}{}{\def\lst@numbersstyle{#1}}
+\lst@Key{parsenumbers}{false}[t]{\lstKV@SetIf{#1}\lst@ifparsenumbers}
+
+\lst@AddToHook{OutputOther}{%
+    \lst@ifparsenumbers
+        % Only if mode changes are not prohibited
+        \lst@ifmode\else
+            \expandafter\@hook@ifnumber\the\lst@token\@end
+                {\let\lst@thestyle=\lst@numbersstyle}%
+                {}%
+        \fi
+    \fi
+}
+\def\@hook@ifnumber#1#2\@end{%
+    \@genericif{\ifx\lst@nolig#1}%
+        {\@hook@ifnumber@{#2}}%
+        {\@hook@ifnumber@{#1#2}}%
+}
+\def\@hook@ifnumber@{%
+    \ifnumber[\expandafter\let\expandafter\parse@num@minus\csname lst@um-\endcsname]%
+}
+
+\makeatother
+
+
+\lstdefinelanguage{js}{
+    keywords={async,await,break,case,catch,class,const,continue,debugger,default,delete,do,else,enum,export,extends,false,finally,for,function,if,import,in,instanceof,new,null,return,super,switch,throw,true,try,typeof,var,void,while,with,yield,enum,implements,interface,package,private,protected,public,get,set,let,as},
+    otherkeywords={},
+    otherkeywords={=>},
+    keywordstyle=\color{keywordcolor}\bfseries,
+    keywords=[2]{global,this,window,cs580,vec2,vec3,vec4,mat4,quat,gl,Math,number,boolean,string,object,Function,THREE},
+    keywordstyle=[2]\color{variablecolor}\bfseries,
+    identifierstyle=\color{textcolor},
+    sensitive=false,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{commentcolor},
+    stringstyle=\color{stringcolor},
+    morestring=[b]',
+    morestring=[b]",
+    parsenumbers = true,
+    numbersstyle=\color{numbercolor},
+}
+\lstdefinelanguage{glsl}{
+    keywords={attribute,const,uniform,varying,centroid,break,continue,do,for,while,if,else,in,out,inout,float,int,void,bool,true,false,invariant,discard,return,mat2,mat3,mat4,mat2x2,mat2x3,mat2x4,mat3x2,mat3x3,mat3x4,mat4x2,mat4x3,mat4x4,vec2,vec3,vec4,ivec2,ivec3,ivec4,bvec2,bvec3,bvec4,sampler1D,sampler2D,sampler3D,samplerCube,sampler1DShadow,sampler2DShadow,struct,asm,class,union,enum,typedef,template,this,packed,goto,switch,defaultinlinenoinline,volatile,public,static,extern,external,interface,long,short,double,half,fixed,unsigned,lowp,mediump,highp,precision,input,output,hvec2,hvec3,hvec4,dvec2,dvec3,dvec4,fvec2,fvec3,fvec4,sampler2DRect,sampler3DRect,sampler2DRectShadow,sizeof,castnamespace,using},
+    keywordstyle=\color{keywordcolor}\bfseries,
+    identifierstyle=\color{textcolor},
+    sensitive=false,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{commentcolor},
+    stringstyle=\color{stringcolor},
+    morestring=[b]',
+    morestring=[b]",
+    parsenumbers = true,
+    numbersstyle=\color{numbercolor},
+    moredelim = [s][\color{keywordcolor}\bfseries]{\#}{\ },
+    moredelim = [s][\color{variablecolor}\bfseries]{gl\_}{\ },
+    moredelim = [s][\color{variablecolor}\bfseries]{\_\_}{\_\_}
+}
+\lstset{
+    extendedchars=true,
+    basicstyle=\small\ttfamily,
+    showstringspaces=false,
+    showspaces=false,
+    tabsize=2,
+    breaklines=true,
+    showtabs=false,
+    backgroundcolor=\color{bgcolor},
+    escapeinside={|}{|}
+}
+
+\makeatletter
+\patchcmd{\lsthk@TextStyle}{\let\lst@DefEsc\@empty}{}{}{\errmessage{failed to patch}}
+\makeatother
+\NewDocumentCommand{\lst}{O{sh} v}{%
+    \Colorbox{bgcolor}{\csname lstinline\endcsname[language=#1,basicstyle=\normalsize\ttfamily,escapechar=|,breaklines=true]!#2!}%
+}
+\tcbset{listing only,colframe=bgcolor,
+    colback=bgcolor,
+    left=4pt,right=4pt,top=-2pt,bottom=-2pt,
+    grow to left by=50pt,
+    grow to right by=50pt,
+    enlarge top by=10pt,
+    enlarge bottom by=10pt,
+    breakable}

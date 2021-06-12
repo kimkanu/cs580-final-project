@@ -1,0 +1,44 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesExplPackage{macros-common}{2020/03/26}{1.0}{Common macros}
+
+\RequirePackage{expl3}
+\RequirePackage{xparse}
+
+\makeatletter
+\newcommand{\wr@pwithdelimiter}[4]{
+    \ifx#1\big%
+        \ensuremath{\bigl#3 #2 \bigr#4}%
+    \else\ifx#1\Big%
+        \ensuremath{\Bigl#3 #2 \Bigr#4}%
+    \else\ifx#1\bigg%
+        \ensuremath{\biggl#3 #2 \biggr#4}%
+    \else\ifx#1\Bigg%
+        \ensuremath{\Biggl#3 #2 \Biggr#4}%
+    \else%
+        \ensuremath{\left#3 #2 \right#4}%
+    \fi\fi\fi\fi
+}
+\newcommand{\paren}[2][]{\wr@pwithdelimiter{#1}{#2}()}
+\newcommand{\set}[2][]{\wr@pwithdelimiter{#1}{#2}\{\}}
+\newcommand{\bracket}[2][]{\wr@pwithdelimiter{#1}{#2}[]}
+\newcommand{\angl}[2][]{\wr@pwithdelimiter{#1}{#2}\langle\rangle}
+\newcommand{\abs}[2][]{\wr@pwithdelimiter{#1}{#2}||}
+
+\newcommand{\ZZ}{\ensuremath{\mathbb{Z}}}
+\newcommand{\QQ}{\ensuremath{\mathbb{Q}}}
+\newcommand{\RR}{\ensuremath{\mathbb{R}}}
+\newcommand{\CC}{\ensuremath{\mathbb{C}}}
+\newcommand{\HH}{\ensuremath{\mathbb{H}}}
+\newcommand{\FF}{\ensuremath{\mathbb{F}}}
+
+
+\newcommand{\decto}{\ensuremath{\mkern1mu\mathrel{\downarrow}\mkern1mu}}
+\newcommand{\incto}{\ensuremath{\mkern1mu\mathrel{\uparrow}\mkern1mu}}
+\newcommand{\eqlh}{\ensuremath{\stackrel[\textrm{L'H}]{}{=\joinrel=}}}
+
+\newcommand{\sgn}{\ensuremath{\operatorname{sgn}}}
+\renewcommand{\d}{\ensuremath{\,\mathrm d}}
+\newcommand{\deriv}[2][]{\ensuremath{\frac{\mathrm d^{#1}}{\mathrm d #2^{#1}}}\,}
+
+
+\makeatother
