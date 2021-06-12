@@ -116,7 +116,7 @@ pub fn getSBSCoR(
                 );
 
                 least_squares_coeff.row_concat(vec![rot_a - rot_b]);
-                least_squares_const.row_concat(vec![tr_a - tr_b]);
+                least_squares_const.row_concat(vec![bind_matrix.nth_matrix(0) * (tr_a - tr_b)]);
             }
 
             let svd = SVD::new(least_squares_coeff.clone(), true, true);
@@ -142,7 +142,7 @@ pub fn getSBSCoR(
                         .reduce(|a, b| 100 * a + b)
                         .unwrap_or(0),
                 );
-                cor_list.push(r.iter().cloned().collect::<Vec<_>>());
+                cor_list.push((bind_matrix_inverse.nth_matrix(0) * r).iter().cloned().collect::<Vec<_>>());
             }
         }
     }

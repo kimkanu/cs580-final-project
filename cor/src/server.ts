@@ -1,9 +1,9 @@
 import fastifyFactory, { FastifySchema } from "fastify";
-import { Worker } from "worker_threads";
-import { MeshData, WorkerReply } from "./types";
-import fs from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
+import { Worker } from "worker_threads";
+
+import { MeshData, WorkerReply } from "./types";
 
 const fastify = fastifyFactory({
   logger: {
@@ -55,14 +55,12 @@ fastify.post("/", postOptions, async (request, reply) => {
   const filepath = path.join(
     "cache",
     body.modelName,
-    body.meshName + ".corbin"
+    body.meshName + ".corbin",
   );
 
   if (!isDataReady.hasOwnProperty(body.modelName)) {
     isDataReady[body.modelName] = {};
   }
-
-  console.log(body.meshName, existsSync(filepath));
 
   if (existsSync(filepath)) {
     isDataReady[body.modelName][body.meshName] = true;
@@ -89,9 +87,7 @@ fastify.post("/", postOptions, async (request, reply) => {
       if (success) {
         isDataReady[modelName][meshName] = true;
       } else {
-        console.warn(
-          `Failed to process the mesh ${meshName}. ${errorMessage}`
-        );
+        console.warn(`Failed to process the mesh ${meshName}. ${errorMessage}`);
       }
     })
     .catch((e) => {
@@ -108,7 +104,7 @@ fastify.post("/", postOptions, async (request, reply) => {
 fastify.get("/:modelName", async (request, reply) => {
   const { modelName } = request.params as { modelName: string };
   if (!modelName) {
-    return reply.code(400).send({});
+    return reply.code(200).send({});
   }
 
   if (

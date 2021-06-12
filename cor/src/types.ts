@@ -2,7 +2,7 @@ export type Vertex = [number, number, number];
 
 export type SkinWeight = [
   number /* joint index */,
-  number /* 0 <= skin weight value <= 1 */
+  number /* 0 <= skin weight value <= 1 */,
 ][];
 
 export interface MeshData {

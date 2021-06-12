@@ -23,7 +23,7 @@ mat4 getDLBMat4(
   DualQuat dqZ,
   DualQuat dqW
 ) {
-  // ̂b in the paper
+  // b̂ in the paper
   DualQuat linearBlending;
   linearBlending.rot = weights.x * dqX.rot
       + weights.y * dqY.rot * dualQuatAntipodality( dqX, dqY )

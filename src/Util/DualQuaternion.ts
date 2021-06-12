@@ -1,4 +1,3 @@
-import { RawVector3 } from "@pixiv/three-vrm";
 import * as THREE from "three";
 
 function _scaleQuat(quat: THREE.Quaternion, scale: number): void {
@@ -9,10 +8,7 @@ function _scaleQuat(quat: THREE.Quaternion, scale: number): void {
 }
 
 export class DualQuaternion {
-  constructor(
-    public rot: THREE.Quaternion,
-    public transl: THREE.Quaternion
-  ) {}
+  constructor(public rot: THREE.Quaternion, public transl: THREE.Quaternion) {}
 
   static fromMat4(mat: THREE.Matrix4): DualQuaternion {
     const rot = new THREE.Quaternion().setFromRotationMatrix(mat);
@@ -20,7 +16,7 @@ export class DualQuaternion {
       mat.elements[12],
       mat.elements[13],
       mat.elements[14],
-      0
+      0,
     ).multiply(rot);
     // scale by 1 / 2
     transl.x /= 2;

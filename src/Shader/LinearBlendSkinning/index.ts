@@ -1,3 +1,3 @@
-import linearBlendSkinningShader from "./src/linear_blend_skinning.vert";
+import linearBlendSkinningShader from "./Chunk/linear_blend_skinning.vert";
 
 export default linearBlendSkinningShader;

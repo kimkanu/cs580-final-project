@@ -1,11 +1,12 @@
-import { workerData, parentPort } from "worker_threads";
-import path from "path";
-import fs from "fs/promises";
-import mkdirp from "mkdirp";
-import _ from "lodash";
-import { MeshData, SkinWeight, Vertex, WorkerReply } from "./types";
 import { assert } from "console";
+import fs from "fs/promises";
+import _ from "lodash";
+import mkdirp from "mkdirp";
+import path from "path";
 import toBuffer from "typedarray-to-buffer";
+import { workerData, parentPort } from "worker_threads";
+
+import { MeshData, SkinWeight, Vertex, WorkerReply } from "./types";
 
 const EXP_KERNEL_BANDWIDTH = 0.1; // σ
 
@@ -16,10 +17,10 @@ function expCrossDiff(
   wpj: number,
   wpk: number,
   wvj: number,
-  wvk: number
+  wvk: number,
 ): number {
   return Math.exp(
-    -square(wpj * wvk - wpk * wvj) / square(EXP_KERNEL_BANDWIDTH)
+    -square(wpj * wvk - wpk * wvj) / square(EXP_KERNEL_BANDWIDTH),
   );
 }
 
@@ -74,7 +75,7 @@ function similarity(wp: SkinWeight, wv: SkinWeight): number {
 function averageSkinWeight(
   wa: SkinWeight,
   wb: SkinWeight,
-  wc: SkinWeight
+  wc: SkinWeight,
 ): SkinWeight {
   const average = new Map<number, number>();
   for (const wx of [wa, wb, wc]) {
@@ -135,25 +136,17 @@ async function main() {
       .flat();
 
     const approxOptimalCoRBuffer = toBuffer(
-      new Float32Array(approxOptimalCoRArray)
+      new Float32Array(approxOptimalCoRArray),
     );
 
-    const filepath = path.join(
-      "cache",
-      modelName,
-      meshName + ".corbin"
-    );
+    const filepath = path.join("cache", modelName, meshName + ".corbin");
     await mkdirp(path.dirname(filepath));
     await fs.writeFile(
       path.join("cache", modelName, meshName + ".corbin"),
-      approxOptimalCoRBuffer
+      approxOptimalCoRBuffer,
     );
 
-    console.log(
-      modelName,
-      meshName,
-      approxOptimalCoRArray.slice(0, 50)
-    );
+    console.log(modelName, meshName, approxOptimalCoRArray.slice(0, 50));
 
     parentPort?.postMessage({
       modelName,

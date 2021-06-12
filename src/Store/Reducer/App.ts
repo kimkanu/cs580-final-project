@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import * as O from "fp-ts/Option";
 
-import { State } from "~/Store";
+import { MainApp } from "~/App/Main";
 import * as A from "~/App/Types";
-import { MainApp } from "~/App/MainVRM";
 
 interface AppState {
   app: O.Option<A.App>;
@@ -33,7 +33,5 @@ export const appSlice = createSlice({
 });
 
 export const appActions = appSlice.actions;
-
-export const selectApp = (state: State) => state.app.app;
 
 export default appSlice.reducer;

@@ -6,7 +6,7 @@
  */
 export function combinations<T extends number | string>(
   array: T[],
-  n: number
+  n: number,
 ): T[][] {
   if (n === 0) {
     return [[]];

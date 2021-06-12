@@ -1,6 +1,6 @@
 #include <dual_quaternion>
 
-uniform highp sampler2D dualQuaternionizedBoneTexture;
+uniform highp sampler2D dualQuatBoneTexture;
 uniform int boneCount;
 
 DualQuat getDualQuaternionizedBone( const in float i ) {
@@ -10,7 +10,7 @@ DualQuat getDualQuaternionizedBone( const in float i ) {
   float y = ( 0.5 + float( i ) ) / float( boneCount );
 
   DualQuat dq;
-  dq.rot = texture2D( dualQuaternionizedBoneTexture, vec2( rx, y ) );
-  dq.transl = texture2D( dualQuaternionizedBoneTexture, vec2( tx, y ) );
+  dq.rot = texture2D( dualQuatBoneTexture, vec2( rx, y ) );
+  dq.transl = texture2D( dualQuatBoneTexture, vec2( tx, y ) );
   return dq;
 }
